@@ -1,0 +1,11 @@
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Content-Type: application/json; charset=utf-8
+Content-Length: 205
+ETag: W/"cd-2Hckz0/YfIZ90M2YeN8r15ZAwAs"
+Set-Cookie: connect.sid=s%3A9M7xYwxDKsQo3ZJBVkZNZK5-KIl1HKxM.4djph3aT8sjv1Iv8Pf%2B3zMygOWTQZsdBzvra%2BGtHaSQ; Path=/; HttpOnly
+Date: Mon, 19 Jan 2026 19:11:55 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+{"message":"User successfully logged in","token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtyaXNoIiwiaWF0IjoxNzY4ODQ5OTE1LCJleHAiOjE3Njg4NTM1MTV9.fmW0eN2q_SkHa9ffhAAeVZnxITy1k0Rvhyaoj0eWR94"}
