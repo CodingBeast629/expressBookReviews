@@ -1,6 +1,6 @@
 const express = require("express");
 let books = require("./booksdb.js");
-let isValid = require("./auth_users.js").isValid;
+let isValid = require("./auth_users.js").isValid; // keeping import (not used to avoid confusion)
 let users = require("./auth_users.js").users;
 
 const public_users = express.Router();
@@ -9,14 +9,15 @@ const public_users = express.Router();
  * Register a new user
  */
 public_users.post("/register", (req, res) => {
-  const { username, password } = req.body;
+  const { username, password } = req.body || {};
 
   if (!username || !password) {
     return res.status(400).json({ message: "Username and password required" });
   }
 
-  // isValid should return TRUE when username already exists (common lab behavior)
-  if (isValid(username)) {
+  // ✅ Direct check (avoids isValid() definition confusion)
+  const userExists = users.some((u) => u.username === username);
+  if (userExists) {
     return res.status(409).json({ message: "User already exists" });
   }
 
@@ -33,7 +34,9 @@ public_users.get("/", async (req, res) => {
     const allBooks = await Promise.resolve(books);
     return res.status(200).json(allBooks);
   } catch (err) {
-    return res.status(500).json({ message: "Error fetching books", error: err.message });
+    return res
+      .status(500)
+      .json({ message: "Error fetching books", error: err.message });
   }
 });
 
@@ -50,7 +53,9 @@ public_users.get("/isbn/:isbn", async (req, res) => {
 
     return res.status(200).json(book);
   } catch (err) {
-    return res.status(500).json({ message: "Error fetching book by ISBN", error: err.message });
+    return res
+      .status(500)
+      .json({ message: "Error fetching book by ISBN", error: err.message });
   }
 });
 
@@ -70,7 +75,11 @@ public_users.get("/author/:author", (req, res) => {
       return results;
     })
     .then((results) => res.status(200).json(results))
-    .catch((err) => res.status(500).json({ message: "Error fetching books by author", error: err.message }));
+    .catch((err) =>
+      res
+        .status(500)
+        .json({ message: "Error fetching books by author", error: err.message })
+    );
 });
 
 /**
@@ -89,7 +98,9 @@ public_users.get("/title/:title", async (req, res) => {
 
     return res.status(200).json(results);
   } catch (err) {
-    return res.status(500).json({ message: "Error fetching books by title", error: err.message });
+    return res
+      .status(500)
+      .json({ message: "Error fetching books by title", error: err.message });
   }
 });
 
@@ -107,3 +118,4 @@ public_users.get("/review/:isbn", (req, res) => {
 });
 
 module.exports.general = public_users;
+

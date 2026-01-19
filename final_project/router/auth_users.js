@@ -1,6 +1,7 @@
-const express = require('express');
-const jwt = require('jsonwebtoken');
+const express = require("express");
+const jwt = require("jsonwebtoken");
 let books = require("./booksdb.js");
+
 const regd_users = express.Router();
 
 let users = [];
@@ -15,7 +16,11 @@ const authenticatedUser = (username, password) => {
   return users.some((u) => u.username === username && u.password === password);
 };
 
-// only registered users can login
+/**
+ * Task 7:
+ * Login as a registered user
+ * Endpoint must be: /customer/login (router likely mounted at /customer in index.js)
+ */
 regd_users.post("/login", (req, res) => {
   const { username, password } = req.body || {};
 
@@ -27,10 +32,10 @@ regd_users.post("/login", (req, res) => {
     return res.status(401).json({ message: "Invalid login. Check username and password" });
   }
 
-  // Create JWT and store it in session
+  // Create JWT token and store user creds in session
   const accessToken = jwt.sign(
     { username },
-    "access",               // simple secret (matches many IBM lab solutions)
+    "access",
     { expiresIn: "1h" }
   );
 
@@ -38,23 +43,27 @@ regd_users.post("/login", (req, res) => {
 
   return res.status(200).json({
     message: "User successfully logged in",
-    token: accessToken
+    token: accessToken,
   });
 });
 
-// Add or modify a book review (logged-in users only)
+/**
+ * Task 8:
+ * Add or modify a book review
+ * Hint: review must come as a request query param (?review=...)
+ * and must be posted with the username stored in session.
+ */
 regd_users.put("/auth/review/:isbn", (req, res) => {
   const isbn = req.params.isbn;
   const review = req.query.review;
 
-  if (!review) {
-    return res.status(400).json({ message: "Review query parameter is required (e.g., ?review=Great)" });
-  }
-
-  // username saved during login
   const username = req.session?.authorization?.username;
   if (!username) {
     return res.status(401).json({ message: "User not logged in" });
+  }
+
+  if (!review) {
+    return res.status(400).json({ message: "Review query parameter is required (e.g., ?review=Great)" });
   }
 
   if (!books[isbn]) {
@@ -70,11 +79,15 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
 
   return res.status(200).json({
     message: "Review added/updated successfully",
-    reviews: books[isbn].reviews
+    reviews: books[isbn].reviews,
   });
 });
 
-// Delete a book review (only your own)
+/**
+ * Task 9:
+ * Delete a book review (only your own)
+ * Hint: Filter & delete based on session username.
+ */
 regd_users.delete("/auth/review/:isbn", (req, res) => {
   const isbn = req.params.isbn;
 
@@ -95,7 +108,7 @@ regd_users.delete("/auth/review/:isbn", (req, res) => {
 
   return res.status(200).json({
     message: "Review deleted successfully",
-    reviews: books[isbn].reviews
+    reviews: books[isbn].reviews,
   });
 });
 
